@@ -141,7 +141,7 @@ public class TrataCliente implements Runnable {
         cliente= servidor.fila(this.cliente, Status.PRONTO);
         if(cliente != null){
             //System.out.println("ACHEI");
-            cliente.setStatus(Status.JOGAR);
+            cliente.setStatus(Status.MINHAVEZ);
             this.cliente.setStatus(Status.JOGAR);
             cliente.writeInt(Mensagem.jogar);
             this.cliente.writeInt(Mensagem.jogar);

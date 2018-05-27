@@ -44,16 +44,21 @@ public class Sala {
     }
     
     public Boolean fogo(Almirante cliente, int x, int y){
+        Boolean aux;
         if(cliente.equals(cliente1)){
-            cliente1.setStatus(Status.JOGAR);
-            cliente2.setStatus(Status.MINHAVEZ);
-            return tratarBarcos(posicao1, x,y);
+            aux = tratarBarcos(posicao2, x,y);
+            if(!aux){
+                cliente1.setStatus(Status.JOGAR);
+                cliente2.setStatus(Status.MINHAVEZ);
+            }
         }else{
-            cliente2.setStatus(Status.JOGAR);
-            cliente1.setStatus(Status.MINHAVEZ);
-            return tratarBarcos(posicao2, x,y);
+            aux = tratarBarcos(posicao1, x,y);
+            if(!aux){
+                cliente2.setStatus(Status.JOGAR);
+                cliente1.setStatus(Status.MINHAVEZ);
+            }
         }
-        
+        return aux;
     }
     
     private Navio procurarNavio(Navio barco,ArrayList<Navio> array){
