@@ -36,6 +36,7 @@ public class Mensagem {
         return parametro.get(chave);
     }
     
+    public static final int POSICOES = 18;
     //Requisições
     public static final int autenticacao = 110;
     public static final int jogar = 120;

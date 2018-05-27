@@ -8,9 +8,6 @@ package cliente;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -27,24 +24,32 @@ public class Almirante {
     private String ip;
     private String nome;
     private Status status;
-    private ObjectInputStream entrada;
-    private ObjectOutputStream saida;
+    private DataInputStream entrada;
+    private DataOutputStream saida;
+    private String sala;
     
     public Almirante(Socket socket){
+        sala = null;
         cliente = socket;
         status = Status.CONECTADO;
         ip = socket.getInetAddress().getHostAddress();
         nome = "jogador " + String.valueOf( Math.random());
         try {
-            entrada = new ObjectInputStream(socket.getInputStream());
-            saida = new ObjectOutputStream(socket.getOutputStream());
+            entrada = new DataInputStream(socket.getInputStream());
+            saida = new DataOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
             Logger.getLogger(Almirante.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
     
+    public void setSala(String sala){
+        this.sala = sala;
+    }
     
+    public String getSala(){
+        return sala;
+    }
     public int readInt(){
         try {
             return entrada.readInt();
@@ -53,14 +58,6 @@ public class Almirante {
         }
         return 0;
     }
-//    public Object readObject(){
-//        try {
-//            return entrada.rreadObject();
-//        } catch (ClassNotFoundException | IOException ex) {
-//                Logger.getLogger(Almirante.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return null;
-//    }
     public void writeInt(int m){
         try {
             saida.writeInt(m);
@@ -89,6 +86,26 @@ public class Almirante {
         }
         else return 0;
     } 
+    
+//    public int[][] readMatriz(){
+//        int[][] m = new int[10][10];
+//        int i,j, cont =0 ;
+//        try{
+//        for(i =0 ; i< 10 ; i++){
+//            for(j=0; j<10 ; j++){
+//                m[i][j]=entrada.read();
+//                cont++;
+//            }
+//        }
+//        return m;
+//        }catch(IOException ex){
+//            
+//        }
+//        return m;
+//    }
+//    
+    
+    
     public Socket getCliente() {
         return cliente;
     }

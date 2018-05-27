@@ -10,6 +10,6 @@ package respostas;
  * @author gabriel
  */
 public enum Status {
-    FILA, POSICIONAR, CONECTADO
+    FILA, POSICIONAR, CONECTADO, PRONTO,JOGAR,MINHAVEZ
     
 }

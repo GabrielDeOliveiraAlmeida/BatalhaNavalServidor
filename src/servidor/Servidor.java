@@ -7,10 +7,12 @@ package servidor;
 
 
 import cliente.Almirante;
+import cliente.Sala;
 import cliente.TrataCliente;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import respostas.Status;
 
 /**
@@ -24,11 +26,12 @@ public class Servidor{
         private int porta;
         
         private ArrayList<Almirante> jog;
-        
+        private ArrayList<Sala> salas;
         
     public Servidor(int socket){
         porta = socket;
         jog = new ArrayList<>();
+        salas =new ArrayList<>();
     }
     
    
@@ -57,12 +60,27 @@ public class Servidor{
     }
     
     
-    public Almirante fila(Almirante mim){
+    public Almirante fila(Almirante mim, Status st){
         int tam=jog.size();
         for(int i=0; i<tam; i++)
         {
-            if(jog.get(i).getStatus() == Status.FILA && jog.get(i) != mim){
+            if(jog.get(i).getStatus() == st && jog.get(i) != mim){
                 return jog.get(i);
+            }
+        }
+        return null;
+    }
+    
+    public void addSala(Almirante cliente1 ,Almirante cliente2, String nomeSala){
+       salas.add(new Sala(cliente1, cliente2, nomeSala));
+    }
+    
+    public Sala procurarSala(String sala){
+        int tam = sala.length();
+        Sala s;
+        for(int i =0;i<tam; i++){
+            if( salas.get(i).getId().equals(sala)){
+                return salas.get(i);
             }
         }
         return null;
