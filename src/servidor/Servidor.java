@@ -19,7 +19,7 @@ import respostas.Status;
  *
  * @author gabriel
  */
-public class Servidor{
+public class Servidor extends Thread {
     /**
      * @param args the command line arguments
      */
@@ -28,7 +28,8 @@ public class Servidor{
         private ArrayList<Almirante> jog;
         private ArrayList<Sala> salas;
         
-    public Servidor(int socket){
+    
+        public Servidor(int socket){
         porta = socket;
         jog = new ArrayList<>();
         salas =new ArrayList<>();
@@ -71,9 +72,10 @@ public class Servidor{
         return null;
     }
     
-    public void addSala(Almirante cliente1 ,Almirante cliente2, String nomeSala){
-       salas.add(new Sala(cliente1, cliente2, nomeSala));
-    }
+//    public void addSala(Almirante cliente1 ,Almirante cliente2, String nomeSala){
+//       Sala s = new Sala(cliente1, cliente2, nomeSala);
+//       salas.add(s);
+//    }
     
     public Sala procurarSala(String sala){
         int tam = sala.length();
@@ -84,6 +86,15 @@ public class Servidor{
             }
         }
         return null;
+    }
+    
+    public void removerCliente(Almirante cliente){
+        int tam = jog.size();
+        for(int i=0; i<tam; i++){
+            if(jog.get(i).equals(cliente)){
+                jog.remove(jog.get(i));
+            }
+        }
     }
     
     public static void main(String[] args)  {

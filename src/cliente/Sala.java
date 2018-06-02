@@ -33,7 +33,23 @@ public class Sala {
         posicao2 = new ArrayList<>();
     }
     
+    public Almirante getCliente2(){
+        return cliente2;
+    }
     
+    public void abandonarPartida(Almirante cliente){
+        if(cliente.equals(cliente1)){
+            cliente2.writeInt(Mensagem.coordendasVencedor);
+            cliente2.setStatus(Status.CONECTADO);
+            cliente2.setSala(null);
+            cliente1.setSala(null);
+        }else if(cliente.equals(cliente2)){
+            cliente1.writeInt(Mensagem.coordendasVencedor);
+            cliente1.setStatus(Status.CONECTADO);
+            cliente1.setSala(null);
+            cliente2.setSala(null);
+        }
+    }
     public void receberPosicao(Almirante cliente, int tipo, int x, int y){
         Navio barco = new Navio(x, y, tipo);
         if(cliente.equals(cliente1)){
@@ -48,14 +64,24 @@ public class Sala {
         if(cliente.equals(cliente1)){
             aux = tratarBarcos(posicao2, x,y);
             if(!aux){
+                cliente1.writeInt(Mensagem.coordenadasFalha);
                 cliente1.setStatus(Status.JOGAR);
                 cliente2.setStatus(Status.MINHAVEZ);
+                cliente2.writeInt(Mensagem.passarVez);
+                cliente2.writeInt(Mensagem.coordenadasInimigo);
+                cliente2.writeInt(x);
+                cliente2.writeInt(y);
             }
         }else{
             aux = tratarBarcos(posicao1, x,y);
             if(!aux){
+                cliente2.writeInt(Mensagem.coordenadasFalha);
                 cliente2.setStatus(Status.JOGAR);
                 cliente1.setStatus(Status.MINHAVEZ);
+                cliente1.writeInt(Mensagem.passarVez);
+                cliente1.writeInt(Mensagem.coordenadasInimigo);
+                cliente1.writeInt(x);
+                cliente1.writeInt(y);
             }
         }
         return aux;

@@ -22,7 +22,7 @@ import servidor.Servidor;
  *
  * @author gabriel
  */
-public class TrataCliente implements Runnable {
+public class TrataCliente implements Runnable{
     private Socket socket;
 
     private Almirante cliente;
@@ -34,38 +34,49 @@ public class TrataCliente implements Runnable {
         this.socket = socket;
         this.cliente = cliente;
         this.servidor = servidor;
+        tiros = 0;
     }
         
+   
     @Override
     public void run(){
         System.out.println("Nova conexao com o cliente: " + this.socket.getInetAddress().getHostAddress());
         
         Integer code = 0;
-      //  Scanner scan = null;
-        while ( Mensagem.desconectar != code ) {
+        while (true) {
+            try{
             code = cliente.readInt();
+            if(code.equals(Mensagem.desconectar)){
+                desconectar();
+                break;
+            }
             interpretador(code);
-            //code = null;
-       
+            }catch(Exception e){
+                break;
+            }
          }
-      //  desconectar();
+        
         
     }
         
     private void fila(){
         int code;
+        String idSala;
         this.cliente.setStatus(Status.FILA);
-        cliente.writeInt(Mensagem.jogarAguardar);
+        //cliente.writeInt(Mensagem.fila);
         Almirante cliente;
+        
         cliente= servidor.fila(this.cliente, Status.FILA);
         if(cliente != null){
             cliente.setStatus(Status.POSICIONAR);
             this.cliente.setStatus(Status.POSICIONAR);
-            cliente.writeInt(Mensagem.jogarSucesso);
-            this.cliente.writeInt(Mensagem.jogarSucesso);
-            servidor.addSala(this.cliente, cliente, "sala1");
-            this.cliente.setSala("sala1");
-            cliente.setSala("sala1");
+            cliente.writeInt(Mensagem.filaSucesso);
+            this.cliente.writeInt(Mensagem.filaSucesso);
+            idSala = cliente.getNome() + cliente.getNome();
+            Sala s = new Sala(this.cliente,cliente, idSala);
+            //servidor.addSala(this.cliente, cliente, idSala);
+            this.cliente.setSala(s);
+            cliente.setSala(s);
         }
        
     }
@@ -95,22 +106,45 @@ public class TrataCliente implements Runnable {
                 System.out.println("Mensagem Para Coordenadas recebida de: " + this.socket.getInetAddress().getHostAddress());
                 fogo();
                 break;
-            case Mensagem.jogarAguardar:
+            case Mensagem.verificarTurno:
                 verificarVez();
+                break;
+            case Mensagem.sair:
+                sair();
+                break;
+            case Mensagem.abandonar:
+                System.out.println("Mensagem Para Abandonar Partida recebida de: " + this.socket.getInetAddress().getHostAddress());
+                abandonarPartida();
+                break;
             default:
                 System.out.println(codigo);
                 
         }
     }
         
+    private void sair(){
+        //sair da fila.
+        cliente.setStatus(Status.CONECTADO);
+        cliente.setSala(null);
+    }
+    
+    private void abandonarPartida(){
+        cliente.setStatus(Status.CONECTADO);
+        //Sala sala = servidor.procurarSala(cliente.getSala());
+        //if(sala != null)
+        cliente.getSala().abandonarPartida(cliente);
+    }
     private void desconectar(){
         try {
-            cliente.writeInt(Mensagem.sairSucesso);
+            //fechar o jogo
+            //cliente.writeInt(Mensagem.sairSucesso);
+            cliente.desconectar();
+            servidor.removerCliente(cliente);
 
         } catch (Exception ex) {
 
             try {
-                cliente.writeInt(Mensagem.sairFalha);
+               // cliente.writeInt(Mensagem.sairFalha);
             } catch (Exception ex1) {
                 System.out.println("ERRO");
             }
@@ -127,15 +161,14 @@ public class TrataCliente implements Runnable {
         //cliente.writeInt(Mensagem.coordenadasSucesso);
         int y = cliente.readInt();
         System.out.print(" y = "+y);
-        cliente.writeInt(Mensagem.posicionarSucesso);
-        Sala sala = servidor.procurarSala(cliente.getSala());
-        if(sala != null)
-        sala.receberPosicao(this.cliente, tipo,x,y);
+        //cliente.writeInt(Mensagem.posicionarSucesso);
+        //Sala sala = servidor.procurarSala(cliente.getSala());
+        //if(sala != null)
+        cliente.getSala().receberPosicao(this.cliente, tipo,x,y);
         
     }
     
     private void toPronto(){
-        cliente.writeInt(Mensagem.prontoJogarSucesso);
         cliente.setStatus(Status.PRONTO);
         Almirante cliente;
         cliente= servidor.fila(this.cliente, Status.PRONTO);
@@ -143,8 +176,8 @@ public class TrataCliente implements Runnable {
             //System.out.println("ACHEI");
             cliente.setStatus(Status.MINHAVEZ);
             this.cliente.setStatus(Status.JOGAR);
-            cliente.writeInt(Mensagem.jogar);
-            this.cliente.writeInt(Mensagem.jogar);
+            cliente.writeInt(Mensagem.prontoJogarSucesso);
+            this.cliente.writeInt(Mensagem.prontoJogarSucesso);
         }
     }
     
@@ -160,17 +193,15 @@ public class TrataCliente implements Runnable {
         
         int x = cliente.readInt();
         int y = cliente.readInt();
-        Sala sala = servidor.procurarSala(cliente.getSala());
-        if(sala == null) System.out.println("sala é NULL");
-        if(sala.fogo(cliente, x, y)){
-            if(tiros==2){
-                cliente.writeInt(Mensagem.coordendasVencedor);
+        System.out.println(x +" , " + y);
+        if(cliente.getSala().fogo(cliente, x, y)){
+            if(tiros==Mensagem.NUMEROPOSTOTAL){
+                cliente.getSala().getCliente2().writeInt(Mensagem.fracassado);
+                cliente.writeInt(Mensagem.vencedor);
             }else{
                 tiros++;
                 cliente.writeInt(Mensagem.coordenadasSucesso);
             }
-        }else{
-            cliente.writeInt(Mensagem.coordenadasFalha);
         }
     }
     

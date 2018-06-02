@@ -36,15 +36,23 @@ public class Mensagem {
         return parametro.get(chave);
     }
     
-    public static final int POSICOES = 18;
+    public static final int NUMEROPOSTOTAL = 2;
     //Requisições
     public static final int autenticacao = 110;
     public static final int jogar = 120;
     public static final int posicionar = 130;
     public static final int prontoJogar = 140;
     public static final int coordenadas = 150;
+    public static final int coordenadasInimigo = 155; 
     public static final int sair = 160;
     public static final int desconectar = 161;
+    public static final int fila = 170;
+    public static final int abandonar = 162;
+    public static final int verificarTurno= 180;
+    public static final int passarVez = 190;
+    public static final int vencedor = 195;
+    public static final int fracassado = 196;
+  
     //Respostas
     public static final int autenticacaoFalha = 210;
     public static final int autenticacaoSucesso = 211;
@@ -65,6 +73,8 @@ public class Mensagem {
     public static final int coordendasTempo = 254;
     public static final int sairFalha = 260;
     public static final int sairSucesso = 261;
+    public static final int filaSucesso = 271;
+    
    
     
 }

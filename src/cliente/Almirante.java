@@ -26,8 +26,9 @@ public class Almirante {
     private Status status;
     private DataInputStream entrada;
     private DataOutputStream saida;
-    private String sala;
+    private Sala sala;
     
+
     public Almirante(Socket socket){
         sala = null;
         cliente = socket;
@@ -43,11 +44,11 @@ public class Almirante {
         
     }
     
-    public void setSala(String sala){
+    public void setSala(Sala sala){
         this.sala = sala;
     }
     
-    public String getSala(){
+    public Sala getSala(){
         return sala;
     }
     public int readInt(){
@@ -71,6 +72,7 @@ public class Almirante {
         try{
             entrada.close();
             saida.close();
+            System.out.println("Cliente desconectado");
             return true;
         }catch(Exception ex){
             System.out.println(ex.getMessage());
