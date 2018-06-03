@@ -5,15 +5,7 @@
  */
 package cliente;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import respostas.Mensagem;
 import respostas.Status;
 import servidor.Servidor;
@@ -27,14 +19,12 @@ public class TrataCliente implements Runnable{
 
     private Almirante cliente;
     private Servidor servidor;
-    int tiros;
     
 
     public TrataCliente(Socket socket, Almirante cliente, Servidor servidor){
         this.socket = socket;
         this.cliente = cliente;
         this.servidor = servidor;
-        tiros = 0;
     }
         
    
@@ -74,7 +64,6 @@ public class TrataCliente implements Runnable{
             this.cliente.writeInt(Mensagem.filaSucesso);
             idSala = cliente.getNome() + cliente.getNome();
             Sala s = new Sala(this.cliente,cliente, idSala);
-            //servidor.addSala(this.cliente, cliente, idSala);
             this.cliente.setSala(s);
             cliente.setSala(s);
         }
@@ -130,21 +119,17 @@ public class TrataCliente implements Runnable{
     
     private void abandonarPartida(){
         cliente.setStatus(Status.CONECTADO);
-        //Sala sala = servidor.procurarSala(cliente.getSala());
-        //if(sala != null)
         cliente.getSala().abandonarPartida(cliente);
     }
     private void desconectar(){
         try {
             //fechar o jogo
-            //cliente.writeInt(Mensagem.sairSucesso);
             cliente.desconectar();
             servidor.removerCliente(cliente);
 
         } catch (Exception ex) {
 
             try {
-               // cliente.writeInt(Mensagem.sairFalha);
             } catch (Exception ex1) {
                 System.out.println("ERRO");
             }
@@ -155,27 +140,21 @@ public class TrataCliente implements Runnable{
     private void apontar(){
         int tipo = cliente.readInt();
         System.out.println("Tipo = " + tipo);
-        //cliente.writeInt(Mensagem.coordenadasSucesso)
         int x = cliente.readInt();
         System.out.print(" x = " + x);
-        //cliente.writeInt(Mensagem.coordenadasSucesso);
         int y = cliente.readInt();
         System.out.print(" y = "+y);
-        //cliente.writeInt(Mensagem.posicionarSucesso);
-        //Sala sala = servidor.procurarSala(cliente.getSala());
-        //if(sala != null)
         cliente.getSala().receberPosicao(this.cliente, tipo,x,y);
         
     }
     
     private void toPronto(){
         cliente.setStatus(Status.PRONTO);
-        Almirante cliente;
-        cliente= servidor.fila(this.cliente, Status.PRONTO);
+        Almirante cliente= servidor.fila(this.cliente, Status.PRONTO);
         if(cliente != null){
             //System.out.println("ACHEI");
             cliente.setStatus(Status.MINHAVEZ);
-            this.cliente.setStatus(Status.JOGAR);
+             this.cliente.setStatus(Status.JOGAR);
             cliente.writeInt(Mensagem.prontoJogarSucesso);
             this.cliente.writeInt(Mensagem.prontoJogarSucesso);
         }
@@ -186,7 +165,7 @@ public class TrataCliente implements Runnable{
         if(cliente.getStatus() != Status.MINHAVEZ){
             cliente.writeInt(Mensagem.jogarAguardar);
         }else{
-            cliente.writeInt(Mensagem.jogar);
+            cliente.writeInt(Mensagem.jogarSeuTurno);
         }
     }
     private void fogo(){
@@ -195,11 +174,12 @@ public class TrataCliente implements Runnable{
         int y = cliente.readInt();
         System.out.println(x +" , " + y);
         if(cliente.getSala().fogo(cliente, x, y)){
-            if(tiros==Mensagem.NUMEROPOSTOTAL){
-                cliente.getSala().getCliente2().writeInt(Mensagem.fracassado);
+            cliente.getSala().incTiros(this.cliente);
+            if(cliente.getSala().getTiros(this.cliente)==Mensagem.NUMEROPOSTOTAL){
+                cliente.getSala().getCliente2(this.cliente).writeInt(Mensagem.fracassado);
                 cliente.writeInt(Mensagem.vencedor);
             }else{
-                tiros++;
+                cliente.getSala().getCliente2(this.cliente).writeInt(Mensagem.atingido);
                 cliente.writeInt(Mensagem.coordenadasSucesso);
             }
         }

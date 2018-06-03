@@ -15,10 +15,10 @@ import respostas.Status;
  */
 public class Sala {
     private Almirante cliente1, cliente2;
-    //private int[][] matriz1, matriz2;
     private String id;
     private ArrayList<Navio> posicao1;
     private ArrayList<Navio> posicao2;
+    private int tiros1, tiros2;
 
     public String getId() {
         return id;
@@ -26,15 +26,30 @@ public class Sala {
     
     
     public Sala(Almirante cliente1, Almirante cliente2,String id){
+        tiros1 =0;
+        tiros2 =0;
         this.cliente1 = cliente1;
         this.cliente2 = cliente2;
         this.id = id;
         posicao1 = new ArrayList<>();
         posicao2 = new ArrayList<>();
     }
-    
-    public Almirante getCliente2(){
-        return cliente2;
+    public int getTiros(Almirante cliente){
+        if(cliente.equals(cliente1)) return tiros1;
+        else return tiros2;
+    }
+    public void incTiros(Almirante cliente){
+        if(cliente.equals(cliente1)){
+            tiros1++;
+        }
+        else{
+            tiros2++;
+        }
+    }
+    public Almirante getCliente2(Almirante cliente){
+        if(cliente.equals(cliente1)) return cliente2;
+        else if(cliente.equals(cliente2)) return cliente1;
+        return null;
     }
     
     public void abandonarPartida(Almirante cliente){

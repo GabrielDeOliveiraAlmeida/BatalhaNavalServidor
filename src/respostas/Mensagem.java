@@ -40,6 +40,7 @@ public class Mensagem {
     //Requisições
     public static final int autenticacao = 110;
     public static final int jogar = 120;
+    public static final int jogarSeuTurno = 125;
     public static final int posicionar = 130;
     public static final int prontoJogar = 140;
     public static final int coordenadas = 150;
@@ -52,6 +53,7 @@ public class Mensagem {
     public static final int passarVez = 190;
     public static final int vencedor = 195;
     public static final int fracassado = 196;
+    public static final int atingido = 156;
   
     //Respostas
     public static final int autenticacaoFalha = 210;
