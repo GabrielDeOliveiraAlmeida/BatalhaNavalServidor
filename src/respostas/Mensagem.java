@@ -37,6 +37,7 @@ public class Mensagem {
     }
     
     public static final int NUMEROPOSTOTAL = 2;
+    public static final int NUMEROBARCOSTOTAL = 2;
     //Requisições
     public static final int autenticacao = 110;
     public static final int jogar = 120;
